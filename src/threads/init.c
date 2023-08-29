@@ -134,12 +134,69 @@ pintos_init (void)
     run_actions (argv);
   } else {
     // TODO: no command line passed to kernel. Run interactively 
+
+    while(1) {
+      printf("CS2043> ");
+      char line[10];
+      readline(line, 10);
+
+      if (strcmp(line, "whoami") == 0) {
+        printf("Deshitha Gallage - 210173T\n");
+      }
+      else if (strcmp(line, "shutdown") == 0) {
+        printf("Shutting Down...\n");
+        break;
+      }
+      else if (strcmp(line, "time") == 0) {
+        printf("Number of seconds passed since Unix epoch: %lu seconds\n", rtc_get_time());
+      }
+      else if (strcmp(line, "ram") == 0) {
+        printf("Amount of RAM available for the OS: %u KB\n", init_ram_pages * PGSIZE / 1024);
+      }
+      else if (strcmp(line, "thread") == 0) {
+        thread_print_stats();
+      }
+      else if (strcmp(line, "priority") == 0) {
+        printf("Thread priority of the current thread: %d\n", thread_get_priority());
+      }
+      else if (strcmp(line, "exit") == 0) {
+        printf("Exiting Shell...\n");
+        break;
+      }
+      else {
+        printf("Invalid Command! Please try again.\n");
+      }
+    }
   }
 
   /* Finish up. */
   shutdown ();
   thread_exit ();
 }
+
+void readline(char line[], size_t max_size) {
+    char c;
+    size_t current_count = 0;
+
+    while (1) {
+        c = input_getc();
+        
+        if (c == '\r') {
+            break;
+        } else if (c == '\b' && current_count > 0) {
+            printf("\b \b");
+            current_count--;
+        } else if (c >= 32 && current_count < max_size - 1) {
+            printf("%c", c);
+            line[current_count++] = c;
+        }
+    }
+
+    line[current_count] = '\0';
+    printf("\n");
+    
+}
+
 
 /* Clear the "BSS", a segment that should be initialized to
    zeros.  It isn't actually stored on disk or zeroed by the
